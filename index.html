@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquivo Jedi: Holocron de Dados</title>
+    <meta name="description" content="Explore o cânone oficial de Star Wars. Cronologia galáctica interativa com filtros por Era, Tipo de Mídia e busca por título.">
+
+    <!-- PWA -->
+    <link rel="manifest" href="/HolocronData/manifest.json">
+    <meta name="theme-color" content="#38bdf8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Jedi Archive">
+    <link rel="apple-touch-icon" href="/HolocronData/icons/icon-192x192.png">
+
+    <!-- Tailwind CDN (mantido para compatibilidade com as classes utilitárias existentes) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Google Sans"', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: '#0f172a',
+                        'surface-glass': 'rgba(30, 41, 59, 0.45)',
+                        'surface-glass-hover': 'rgba(30, 41, 59, 0.65)',
+                        'border-glass': 'rgba(255, 255, 255, 0.1)',
+                        primary: '#38bdf8',
+                        secondary: '#f43f5e',
+                        tertiary: '#c084fc',
+                    },
+                    borderRadius: {
+                        '4xl': '2rem',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Estilos globais do projeto -->
+  <script type="module" crossorigin src="/HolocronData/assets/index-BcrSgdNq.js"></script>
+  <link rel="stylesheet" crossorigin href="/HolocronData/assets/index-Blru2MmB.css">
+</head>
+
+<body class="antialiased min-h-screen">
+
+    <!-- Ambient Background Orbs -->
+    <div class="bg-orb bg-sky-600/30 w-[600px] h-[600px] top-[-200px] left-[-200px]"></div>
+    <div class="bg-orb bg-rose-600/20 w-[500px] h-[500px] bottom-[10%] right-[-100px]"></div>
+    <div class="bg-orb bg-purple-600/20 w-[400px] h-[400px] top-[40%] left-[20%]"></div>
+
+    <div class="max-w-6xl mx-auto px-4 py-10 relative z-10">
+
+        <!-- Header -->
+        <header class="mb-12 flex flex-col items-center text-center">
+            <div class="glass-panel px-6 py-2 rounded-full mb-6 inline-flex items-center gap-2">
+                <span class="text-primary text-xl">◈</span>
+                <span class="text-sky-100 text-sm font-semibold tracking-widest uppercase">Rede de Arquivos Jedi</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-white to-sky-100 mb-6 tracking-tight">
+                Cronologia Galáctica
+            </h1>
+            <p class="text-lg md:text-xl text-slate-300 max-w-3xl font-light">
+                Explore o cânone oficial. Utilize os controles do painel para focar em eras específicas no gráfico e <b
+                    class="text-white">clique nos títulos da linha do tempo</b> para descriptografar informações vitais
+                de cada obra.
+            </p>
+        </header>
+
+        <!-- Dashboard: Gráfico e Controles de Era -->
+        <section class="glass-panel rounded-4xl p-6 md:p-8 mb-12">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-white mb-2">Densidade de Eventos</h2>
+                    <p class="text-slate-400 text-sm">Selecione uma Era Histórica para ajustar o foco dos sensores de
+                        tempo.</p>
+                </div>
+
+                <!-- Era Controls -->
+                <div class="flex flex-wrap gap-2" id="eraControls">
+                    <button data-min="-250" data-max="40"
+                        class="era-btn active px-4 py-2 rounded-2xl bg-sky-500/20 text-sky-200 border border-sky-500/30 font-medium text-sm transition-all hover:bg-sky-500/30">Visão
+                        Geral</button>
+                    <button data-min="-250" data-max="-80"
+                        class="era-btn px-4 py-2 rounded-2xl bg-slate-800 text-slate-300 border border-slate-700 font-medium text-sm transition-all hover:bg-slate-700 hover:text-white">Alta
+                        República</button>
+                    <button data-min="-40" data-max="-18"
+                        class="era-btn px-4 py-2 rounded-2xl bg-slate-800 text-slate-300 border border-slate-700 font-medium text-sm transition-all hover:bg-slate-700 hover:text-white">Queda
+                        dos Jedi</button>
+                    <button data-min="-20" data-max="2"
+                        class="era-btn px-4 py-2 rounded-2xl bg-slate-800 text-slate-300 border border-slate-700 font-medium text-sm transition-all hover:bg-slate-700 hover:text-white">Império
+                        / Rebelião</button>
+                    <button data-min="5" data-max="36"
+                        class="era-btn px-4 py-2 rounded-2xl bg-slate-800 text-slate-300 border border-slate-700 font-medium text-sm transition-all hover:bg-slate-700 hover:text-white">Nova
+                        República / 1ª Ordem</button>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="timelineChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Filtros e Busca -->
+        <section class="mb-8">
+            <div class="glass-panel rounded-3xl p-4 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-4 z-30">
+                <div class="flex flex-wrap gap-2 w-full md:w-auto" id="typeFilters">
+                    <button data-filter="All"
+                        class="filter-btn active px-5 py-2.5 rounded-2xl bg-white text-slate-900 font-bold text-sm transition-all">Todos
+                        os Registros</button>
+                    <button data-filter="Filme"
+                        class="filter-btn px-5 py-2.5 rounded-2xl bg-slate-800/50 text-slate-300 border border-slate-700 font-medium text-sm transition-all hover:bg-slate-700">Filmes</button>
+                    <button data-filter="Live-action"
+                        class="filter-btn px-5 py-2.5 rounded-2xl bg-slate-800/50 text-slate-300 border border-slate-700 font-medium text-sm transition-all hover:bg-slate-700">Live-action</button>
+                    <button data-filter="Animação"
+                        class="filter-btn px-5 py-2.5 rounded-2xl bg-slate-800/50 text-slate-300 border border-slate-700 font-medium text-sm transition-all hover:bg-slate-700">Animações</button>
+                </div>
+                <div class="relative w-full md:w-80">
+                    <input type="text" id="searchInput" placeholder="Descriptografar título..."
+                        class="w-full pl-10 pr-12 py-3 bg-slate-900/50 border border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all text-sm font-medium text-white placeholder-slate-500">
+                    <div class="absolute left-3 top-3.5 text-slate-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lista Expandível -->
+        <section class="relative">
+            <div class="absolute top-4 bottom-4 left-3 md:left-6 w-[2px] md:w-1 bg-gradient-to-b from-sky-500/50 via-purple-500/50 to-rose-500/50 rounded-full z-0">
+            </div>
+            <div id="timelineContainer" class="space-y-4 pl-8 md:pl-14 pr-2 pb-12 relative z-10">
+                <!-- Conteúdo gerado via JS -->
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Entry Point do Módulo JS -->
+</body>
+
+</html>
