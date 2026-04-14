@@ -16,39 +16,12 @@
     <meta name="apple-mobile-web-app-title" content="Jedi Archive">
     <link rel="apple-touch-icon" href="/HolocronData/icons/icon-192x192.png">
 
-    <!-- Tailwind CDN (mantido para compatibilidade com as classes utilitárias existentes) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Google Sans"', 'system-ui', 'sans-serif'],
-                    },
-                    colors: {
-                        surface: '#0f172a',
-                        'surface-glass': 'rgba(30, 41, 59, 0.45)',
-                        'surface-glass-hover': 'rgba(30, 41, 59, 0.65)',
-                        'border-glass': 'rgba(255, 255, 255, 0.1)',
-                        primary: '#38bdf8',
-                        secondary: '#f43f5e',
-                        tertiary: '#c084fc',
-                    },
-                    borderRadius: {
-                        '4xl': '2rem',
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Chart.js -->
+    <!-- Chart.js via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Estilos globais do projeto -->
-  <script type="module" crossorigin src="/HolocronData/assets/index-BcrSgdNq.js"></script>
-  <link rel="stylesheet" crossorigin href="/HolocronData/assets/index-Blru2MmB.css">
+    <!-- Global styles (Tailwind processed via PostCSS + custom tokens) -->
+  <script type="module" crossorigin src="/HolocronData/assets/index-DkRA4Gnb.js"></script>
+  <link rel="stylesheet" crossorigin href="/HolocronData/assets/index-BKHvI2TU.css">
 </head>
 
 <body class="antialiased min-h-screen">
