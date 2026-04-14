@@ -1,0 +1,107 @@
+/* ============================================================
+   GLOBAL STYLES — StarWars Holocron
+   Responsabilidade: Estilos de base, design tokens customizados,
+   utilitários globais e animações que não pertencem a um
+   componente específico.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+/* --- Reset & Base --- */
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #020617; /* slate-950 */
+    color: #f8fafc;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* --- Design Token: Glassmorphism Panel --- */
+.glass-panel {
+    background: rgba(30, 41, 59, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* --- Design Token: Interactive Glass Panel --- */
+.glass-panel-interactive {
+    background: rgba(30, 41, 59, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-interactive:hover {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+/* --- Design Token: Ambient Background Orbs --- */
+.bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: -1;
+    opacity: 0.4;
+}
+
+/* --- Component: Chart Container --- */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+}
+
+/* --- Utility: Custom Scrollbar (Material 3 Style) --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- Utility: Accordion Expand Animation (CSS Grid Trick) --- */
+.expandable-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.expandable-content.expanded {
+    grid-template-rows: 1fr;
+}
+
+.expandable-inner {
+    overflow: hidden;
+}
+
+/* --- Utility: Rotation for chevron icon toggle --- */
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+/* --- Animation: Timeline Item entrance --- */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
