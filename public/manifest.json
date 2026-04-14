@@ -2,7 +2,7 @@
   "name": "Jedi Archive: Holocron Data",
   "short_name": "Jedi Archive",
   "description": "Explore the Star Wars canon through an interactive galactic timeline with filters, search, and expandable details.",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#38bdf8",
@@ -11,13 +11,13 @@
   "categories": ["entertainment", "education"],
   "icons": [
     {
-      "src": "/icons/icon-192x192.png",
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -25,7 +25,7 @@
   ],
   "screenshots": [
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "label": "Jedi Archive — Galactic Timeline"

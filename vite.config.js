@@ -1,7 +1,11 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  // Garante que o Vite sirva o index.html da raiz do projeto
+  // Base path para GitHub Pages (nome do repositório)
+  // Em desenvolvimento (npm run dev) não afeta nada.
+  // Em produção (npm run build) gera caminhos /HolocronData/assets/...
+  base: '/HolocronData/',
+
   root: '.',
   server: {
     port: 3000,
