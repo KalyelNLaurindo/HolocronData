@@ -4,10 +4,14 @@
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Vite](https://img.shields.io/badge/Vite-5.2%2B-646CFF?logo=vite)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-3.x-38bdf8?logo=tailwindcss)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?logo=javascript)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![Live](https://img.shields.io/badge/Live-GitHub_Pages-181717?logo=github)
 
 **Where the Force meets clean code.**
+
+🌐 **Live:** [kalyelnlaurindo.github.io/HolocronData](https://kalyelnlaurindo.github.io/HolocronData/)
 
 Jedi Archive is an interactive web application built with modular Vanilla JS and Vite, designed to explore the entire canonical Star Wars timeline — movies, live-action series, and animations — with a focus on componentization, OOP design patterns (Observer, Repository, Facade), and a premium visual experience featuring glassmorphism and fluid animations.
 
@@ -129,17 +133,20 @@ flowchart TD
 | ADR04 | Event Delegation on the list container          | A single listener on the parent captures all clicks, preventing O(N) memory leaks               |
 | ADR05 | Data in a pure declarative JS module            | Allows future swap with an API call without changing any View component                          |
 | ADR06 | Barrel exports (`index.js`) in each component   | Stable public interface; internals can be refactored without breaking importers. **Exception:** `UIManager` is imported directly (no barrel), as it is a stateless utility with no internal complexity to hide |
+| ADR07 | Tailwind CSS via PostCSS (not CDN)              | CDN version is banned in production (no tree-shaking, no JIT cache); PostCSS pipeline via `tailwind.config.js` generates only the used classes, reducing CSS bundle size |
 
 ### Technology Stack
 
-| Category           | Technology                    | Purpose / Rationale                                               |
-|--------------------|-------------------------------|-------------------------------------------------------------------|
-| **Language**       | JavaScript ES2022             | Native classes, ES Modules, template literals, destructuring      |
-| **Build Tool**     | Vite 5.2+ (5.4.21 tested)     | Instant HMR, optimized bundling, native ES Module support         |
-| **Visualization**  | Chart.js (via CDN)            | Scatter plot with custom tooltips and declarative animations      |
-| **Styling**        | Tailwind CSS (via CDN) + custom CSS | Utility classes + design tokens isolated in `global.css`    |
-| **Typography**     | Google Fonts (Outfit)         | Premium readability in a dark context                             |
-| **Runtime**        | Modern browser                | No backend dependency; 100% client-side                           |
+| Category           | Technology                          | Purpose / Rationale                                               |
+|--------------------|-------------------------------------|-------------------------------------------------------------------|
+| **Language**       | JavaScript ES2022                   | Native classes, ES Modules, template literals, destructuring      |
+| **Build Tool**     | Vite 5.2+ (5.4.21 tested)           | Instant HMR, optimized bundling, native ES Module support         |
+| **Visualization**  | Chart.js (via CDN)                  | Scatter plot with custom tooltips and declarative animations      |
+| **Styling**        | Tailwind CSS 3.x (PostCSS) + custom CSS | Tree-shaken utility classes via `tailwind.config.js`; design tokens in `global.css` |
+| **Typography**     | Google Fonts (Outfit)               | Premium readability in a dark context                             |
+| **CSS Processing** | PostCSS + Autoprefixer              | Vendor prefix automation; Tailwind compilation pipeline           |
+| **PWA**            | Web App Manifest                    | Installable app, `theme-color`, offline icon, iOS meta tags       |
+| **Runtime**        | Modern browser                      | No backend dependency; 100% client-side                           |
 
 ### Applied Design Patterns
 
@@ -240,15 +247,22 @@ flowchart TD
 
 ```
 StarWarsOrdem/
-├── index.html                          # Pure HTML shell (no inline logic)
-├── vite.config.js                      # Vite server configuration
-├── package.json                        # Project metadata and scripts
+├── index.html                          # Pure HTML shell (no inline logic, no CDN scripts)
+├── vite.config.js                      # Vite config + base: '/HolocronData/' for GitHub Pages
+├── tailwind.config.js                  # Tailwind 3.x config (content scan, custom tokens, dark mode)
+├── postcss.config.js                   # PostCSS pipeline: tailwindcss + autoprefixer
+├── package.json                        # Scripts: dev, build, preview, deploy
 ├── package-lock.json                   # Lockfile (auto-generated by npm)
-├── dist/                               # Production build (generated by Vite)
+├── public/
+│   ├── manifest.json                   # PWA Web App Manifest (icons, theme, start_url)
+│   └── icons/
+│       ├── icon-192x192.png            # PWA icon (maskable)
+│       └── icon-512x512.png            # PWA icon large (maskable)
+├── dist/                               # Production build (generated by Vite — not committed)
 └── src/
     ├── main.js                         # Entry point: application bootstrapper
     ├── styles/
-    │   └── global.css                  # Design tokens, glassmorphism, global animations
+    │   └── global.css                  # @tailwind directives + design tokens + glassmorphism + animations
     ├── data/
     │   └── starWarsData.js             # Single source of truth for data (~40 works)
     ├── core/
@@ -297,15 +311,17 @@ There is no REST API. Data resides in the `src/data/starWarsData.js` module and 
 
 > **⚠️ Localization note:** The `type` field values and the UI labels in `index.html` (filter buttons, card labels) are in **Portuguese (pt-BR)**. The app's `lang` attribute is `pt-BR`. Full English localization would require updating `starWarsData.js` type values, `UIManager.js` style keys, `index.html` button labels, and all template strings in `TimelineComponent._buildCardTemplate()`.
 
-### External Libraries (CDN)
+### External Libraries
 
-| Library      | Version  | Purpose                           | Reference URL                             |
-|--------------|----------|-----------------------------------|-------------------------------------------|
-| Tailwind CSS | 3.x      | Utility-first styling classes     | `https://cdn.tailwindcss.com`             |
-| Chart.js     | latest   | Scatter plot rendering            | `https://cdn.jsdelivr.net/npm/chart.js`   |
-| Google Fonts | —        | Outfit typography                 | `https://fonts.googleapis.com`            |
+| Library      | How loaded  | Version  | Purpose                           |
+|--------------|-------------|----------|-----------------------------------|
+| Tailwind CSS | **npm (PostCSS)** | 3.x | Tree-shaken utility classes via `tailwind.config.js` |
+| PostCSS      | **npm**     | latest   | CSS transformation pipeline       |
+| Autoprefixer | **npm**     | latest   | Vendor prefix automation          |
+| Chart.js     | CDN         | latest   | Scatter plot rendering            |
+| Google Fonts | CDN         | —        | Outfit typography                 |
 
-> **Note:** For ideal production use, replace CDNs with npm-installed dependencies for version control and offline functionality.
+> **Note:** Chart.js is kept on CDN since it is a large, stable library and gzip savings are minimal. For full offline PWA support, install via `npm install chart.js` and import it directly.
 
 ---
 
@@ -313,10 +329,10 @@ There is no REST API. Data resides in the `src/data/starWarsData.js` module and 
 
 ### Environments
 
-| Environment     | URL                     | Purpose                            |
-|-----------------|-------------------------|------------------------------------|
-| Development     | `http://localhost:3000` | HMR via Vite, local testing        |
-| Production      | GitHub Pages / Vercel   | Static site served from `dist/`    |
+| Environment     | URL                                                              | Purpose                            |
+|-----------------|------------------------------------------------------------------|---------------------------------|
+| Development     | `http://localhost:3000`                                          | HMR via Vite, local testing        |
+| Production      | [kalyelnlaurindo.github.io/HolocronData](https://kalyelnlaurindo.github.io/HolocronData/) | Deployed via `gh-pages` branch |
 
 ### Commands
 
@@ -334,22 +350,27 @@ npm run build
 npm run preview
 ```
 
-### Build Output (v1.0.0)
+### Build Output (v1.0.0 — Tailwind via PostCSS)
 
 ```
 vite v5.4.21 building for production...
 ✓ 16 modules transformed.
-dist/index.html               7.99 kB │ gzip: 2.48 kB
+dist/index.html               8.49 kB │ gzip: 2.62 kB
 dist/assets/index-*.css       1.36 kB │ gzip: 0.61 kB
 dist/assets/index-*.js       28.01 kB │ gzip: 9.46 kB
-✓ built in 186ms
+✓ built in ~190ms
 ```
 
-### Static Deploy (GitHub Pages)
+### Deploy to GitHub Pages
 
-1. Run `npm run build` to generate `dist/`
-2. Push the contents of `dist/` to the `gh-pages` branch
-3. On GitHub: Settings → Pages → Source: `gh-pages` / `root`
+```bash
+npm run deploy   # builds + pushes dist/ to gh-pages branch automatically
+```
+
+**First-time GitHub Pages setup:**
+1. Go to **Settings → Pages → Source → Deploy from a branch**
+2. Select branch **`gh-pages`** → folder **`/ (root)`** → Save
+3. Wait ~1–2 minutes → live at `https://kalyelnlaurindo.github.io/HolocronData/`
 
 ---
 
@@ -383,7 +404,10 @@ dist/assets/index-*.js       28.01 kB │ gzip: 9.46 kB
 - [x] Scatter chart with zoom by historical Era (Chart.js)
 - [x] Expandable list with DOM cache and Event Delegation
 - [x] Combined filters (type + search) with debounce
-- [x] Production build validated with Vite (16 modules, 186ms)
+- [x] Production build validated with Vite (16 modules, ~190ms)
+- [x] Tailwind CSS migrated from CDN to PostCSS pipeline (tree-shaking enabled)
+- [x] PWA manifest with icons (192px, 512px), theme-color and iOS meta tags
+- [x] Deployed to GitHub Pages via `gh-pages` branch (`npm run deploy`)
 
 ### 🚧 In Progress (v1.1)
 - [ ] Migration to TypeScript with strict typing for `StarWarsEntry`

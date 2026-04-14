@@ -5,7 +5,13 @@
    componente específico.
    ============================================================ */
 
+/* @import must precede all other statements (PostCSS rule) */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+/* Tailwind CSS — injected via PostCSS (replaces CDN) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* --- Reset & Base --- */
 body {
